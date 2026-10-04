@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#000000">
+  <meta name="description" content="Лайв-тайминг соревнований: результаты и время участников с автоматическим обновлением.">
+  <title>ZoomRacing — Time Attack</title>
+  <link rel="icon" href="zoomracing-logo.png" type="image/png">
+  <link rel="stylesheet" href="styles.css">
+  <script src="config.js" defer></script>
+  <script src="sheets.js" defer></script>
+  <script src="model.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#results">Перейти к результатам</a>
+  <div class="page">
+    <header class="topbar">
+      <a class="brand" href="./" aria-label="ZoomRacing — главная">
+        <img class="brand-logo" src="zoomracing-logo.png" alt="ZoomRacing — почувствуй скорость" width="1380" height="1024">
+        <span class="brand-divider"></span><span class="brand-subtitle">LIVE TIMING</span>
+      </a>
+      <div id="connection" class="connection" role="status"><span class="status-dot"></span><span id="connection-label">Подготовка</span></div>
+    </header>
+
+    <main>
+      <section class="event-header" aria-labelledby="event-title">
+        <div class="event-intro">
+          <p class="eyebrow"><span class="eyebrow-line"></span>ОКТЯБРЬ / LIVE TIMING</p>
+          <h1 id="event-title">TIME ATTACK<span class="title-dot">.</span></h1>
+          <p id="event-description" class="event-description">Время, позиции и результаты участников.</p>
+          <div id="event-details" class="event-details" hidden></div>
+        </div>
+        <div class="clock-panel">
+          <p class="clock-label">ВРЕМЯ СЕЙЧАС <span id="clock-zone">МСК</span></p>
+          <time id="clock" class="clock">--:--<span>:--</span></time>
+          <div class="clock-rule"></div>
+          <p class="clock-date" id="clock-date"></p>
+          <div class="sync-info"><span class="sync-icon" aria-hidden="true">↻</span><span id="sync-label">Ожидание результатов</span></div>
+        </div>
+      </section>
+
+      <div id="demo-banner" class="notice demo-notice" hidden><span class="notice-icon" aria-hidden="true">i</span><div><strong>Демонстрационный режим</strong><span>Участники и результаты вымышлены. Настоящая таблица ещё не подключена.</span></div></div>
+      <div id="error-banner" class="notice error-notice" role="alert" hidden></div>
+
+      <section id="results" class="results-card" aria-labelledby="results-title" tabindex="-1">
+        <div class="results-toolbar">
+          <div class="results-heading"><span class="section-index">01</span><h2 id="results-title">Таблица результатов</h2><span id="row-count" class="count">0</span></div>
+          <div class="table-controls">
+            <label class="search"><svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="m16 16 4.5 4.5"></path></svg><span class="sr-only">Поиск по результатам</span><input id="search" type="search" placeholder="Найти участника…" autocomplete="off"></label>
+            <button id="refresh" class="refresh-button" type="button" aria-label="Обновить результаты" title="Обновить результаты"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M20 7v5h-5M4 17v-5h5"></path><path d="M6.1 6.1A8.3 8.3 0 0 1 20 12M4 12a8.3 8.3 0 0 0 13.9 5.9"></path></svg></button>
+          </div>
+        </div>
+        <div id="table-scroll" class="table-scroll" role="region" aria-label="Результаты участников; на узком экране прокрутите по горизонтали" tabindex="0">
+          <table id="timing-table"><thead id="table-head"></thead><tbody id="table-body"></tbody></table>
+          <div id="empty-state" class="empty-state" hidden><span class="empty-icon" aria-hidden="true">—</span><h3 id="empty-title">Ожидаем результаты</h3><p id="empty-description">Здесь появятся данные соревнования.</p></div>
+        </div>
+        <div class="results-footer"><p id="result-summary">Загрузка…</p><p class="refresh-note"><span class="small-dot" aria-hidden="true"></span><span id="refresh-note">Автоматическое обновление</span></p></div>
+      </section>
+      <p id="footer-note" class="footer-note" hidden></p>
+    </main>
+    <footer class="page-footer"><span>ZOOMRACING <span class="footer-dash">/</span> LIVE TIMING</span><span id="footer-mode">Октябрь · Red Bull Ring GP</span></footer>
+  </div>
+</body>
+</html>
