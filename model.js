@@ -39,6 +39,10 @@
       throw new Error("В данных таблицы не найдены столбцы A (ФИО), G (Время) и J (Баллы).");
     }
     const [nameIndex, timeIndex, pointsIndex] = indices;
+    // Google drops minority text values from a typed column, including the
+    // header itself. Known column IDs and types let us recognize that case.
+    const typedTimeColumn = ["number", "timeofday", "date", "datetime"].includes(data.columns[timeIndex].type);
+    const typedPointsColumn = data.columns[pointsIndex].type === "number";
     const cell = (row, index) => Array.isArray(row) ? text(row[index]) : "";
     const nameAt = (index) => cell(data.rows[index], nameIndex).trim();
     const start = data.rows.findIndex((_, index) => OCTOBER_BANNER.test(nameAt(index)));
@@ -56,9 +60,11 @@
     let header = -1;
     for (let index = start + 1; index < end; index += 1) {
       const row = data.rows[index];
+      const timeHeader = normalized(cell(row, timeIndex));
+      const pointsHeader = normalized(cell(row, pointsIndex));
       if (normalized(cell(row, nameIndex)) === "ФИО" &&
-          normalized(cell(row, timeIndex)) === "ВРЕМЯ" &&
-          normalized(cell(row, pointsIndex)) === "БАЛЛЫ") {
+          (timeHeader === "ВРЕМЯ" || (timeHeader === "" && typedTimeColumn)) &&
+          (pointsHeader === "БАЛЛЫ" || (pointsHeader === "" && typedPointsColumn))) {
         header = index;
         break;
       }
