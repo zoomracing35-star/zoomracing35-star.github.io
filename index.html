@@ -7,11 +7,11 @@
   <meta name="description" content="Лайв-тайминг соревнований: результаты и время участников с автоматическим обновлением.">
   <title>ZoomRacing — Time Attack</title>
   <link rel="icon" href="zoomracing-logo.png" type="image/png">
-  <link rel="stylesheet" href="styles.css">
-  <script src="config.js" defer></script>
-  <script src="sheets.js" defer></script>
-  <script src="model.js?v=20261018" defer></script>
-  <script src="app.js" defer></script>
+  <link rel="stylesheet" href="styles.css?v=20261110">
+  <script src="config.js?v=20261110" defer></script>
+  <script src="sheets.js?v=20261110" defer></script>
+  <script src="model.js?v=20261110" defer></script>
+  <script src="app.js?v=20261110" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#results">Перейти к результатам</a>
@@ -27,7 +27,7 @@
     <main>
       <section class="event-header" aria-labelledby="event-title">
         <div class="event-intro">
-          <p class="eyebrow"><span class="eyebrow-line"></span>ОКТЯБРЬ / LIVE TIMING</p>
+          <p class="eyebrow"><span class="eyebrow-line"></span>НОЯБРЬ / LIVE TIMING</p>
           <h1 id="event-title">TIME ATTACK<span class="title-dot">.</span></h1>
           <p id="event-description" class="event-description">Время, позиции и результаты участников.</p>
           <div id="event-details" class="event-details" hidden></div>
@@ -44,6 +44,8 @@
       <div id="demo-banner" class="notice demo-notice" hidden><span class="notice-icon" aria-hidden="true">i</span><div><strong>Демонстрационный режим</strong><span>Участники и результаты вымышлены. Настоящая таблица ещё не подключена.</span></div></div>
       <div id="error-banner" class="notice error-notice" role="alert" hidden></div>
 
+      <nav id="week-selector" class="week-selector" aria-label="Неделя соревнования"></nav>
+      <p id="week-status" class="week-status" aria-live="polite"></p>
       <section id="results" class="results-card" aria-labelledby="results-title" tabindex="-1">
         <div class="results-toolbar">
           <div class="results-heading"><span class="section-index">01</span><h2 id="results-title">Таблица результатов</h2><span id="row-count" class="count">0</span></div>
@@ -60,7 +62,7 @@
       </section>
       <p id="footer-note" class="footer-note" hidden></p>
     </main>
-    <footer class="page-footer"><span>ZOOMRACING <span class="footer-dash">/</span> LIVE TIMING</span><span id="footer-mode">Октябрь · Red Bull Ring GP</span></footer>
+    <footer class="page-footer"><span>ZOOMRACING <span class="footer-dash">/</span> LIVE TIMING</span><span id="footer-mode">Ноябрь · Месяц Porsche</span></footer>
   </div>
 </body>
 </html>

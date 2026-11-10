@@ -12,6 +12,8 @@
   let state = "loading";
   let previousRows = new Map();
   let demoTick = 0;
+  let weeks = [];
+  let selectedWeek = null;
   let clockFormat, dateFormat;
   try {
     clockFormat = new Intl.DateTimeFormat("ru-RU", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false, timeZone: config.timeZone });
@@ -20,7 +22,7 @@
     clockFormat = new Intl.DateTimeFormat("ru-RU", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false });
     dateFormat = new Intl.DateTimeFormat("ru-RU", { day: "numeric", month: "long", year: "numeric" });
   }
-  document.title = "ZoomRacing — " + config.title + " · Октябрь";
+  document.title = "ZoomRacing — " + config.title + " · Ноябрь";
   elements["event-title"].textContent = config.title;
   const titleDot = document.createElement("span");
   titleDot.className = "title-dot";
@@ -89,7 +91,7 @@
     elements["empty-state"].hidden = visible.length > 0;
     if (!visible.length) {
       elements["empty-title"].textContent = query ? "Участник не найден" : (state === "error" ? "Не удалось получить результаты" : "Ожидаем результаты");
-      elements["empty-description"].textContent = query ? "Попробуйте другое имя или очистите поиск." : "Данные появятся после успешного чтения протокола.";
+      elements["empty-description"].textContent = query ? "Попробуйте другое имя или очистите поиск." : (weeks.length && state !== "error" ? "На этой неделе пока нет результатов. Они появятся автоматически после добавления в таблицу." : "Данные появятся после успешного чтения протокола.");
     }
   }
   function demoData() {
@@ -99,6 +101,32 @@
       rows: [["1", "Пример участника 1", "1:31.278", "—", "6"], ["2", "Пример участника 2", "1:32.286", "+1.008", "5"], ["3", "Пример участника 3", demoTick % 2 ? "1:33.079" : "1:32.970", demoTick % 2 ? "+1.801" : "+1.692", "4"]]
     };
   }
+  function showWeek(number, switched) {
+    const week = weeks.find(w => w.number === number);
+    if (!week) return;
+    selectedWeek = number;
+    previousRows = switched ? new Map() : new Map(data.rows.map((row,i) => [rowKey(row,i),row]));
+    data = week;
+    const labels = {"ПРОВОДИМ СЕЙЧАС":"Идёт сейчас", "ЗАВЕРШЕНО":"Завершена", "СКОРО":"Скоро"};
+    const nav = document.getElementById("week-selector");
+    // Keep buttons stable so keyboard focus survives automatic refreshes.
+    if (!nav.children.length) weeks.forEach(w => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.addEventListener("click", () => { elements.search.value = ""; showWeek(w.number, true); renderTable(); });
+      nav.appendChild(button);
+    });
+    weeks.forEach((w,i) => {
+      const button = nav.children[i];
+      button.textContent = "Неделя " + w.number + (w.status ? " · " + (labels[w.status] || w.status) : "");
+      button.setAttribute("aria-pressed", String(w.number === number));
+    });
+    elements["event-description"].textContent = "Ноябрь · Месяц Porsche · Неделя " + number;
+    elements["event-details"].textContent = [week.car,week.track].filter(Boolean).join(" / ");
+    elements["event-details"].hidden = false;
+    elements["footer-mode"].textContent = "Ноябрь · Неделя " + number;
+    document.getElementById("week-status").textContent = "Неделя " + number + (week.status ? " — " + (labels[week.status] || week.status) : "");
+  }
   async function refresh() {
     if (inFlight || document.hidden) return;
     inFlight = true;
@@ -107,16 +135,22 @@
     elements["sync-label"].textContent = "Проверяем протокол…";
     try {
       const response = demo ? demoData() : await window.TimingSheets.read({ sheetUrl: config.sheetUrl, gid: config.gid, range: config.range, headerRows: config.headerRows, query: config.query, timeoutMs: 12000 });
-      const nextData = config.transform === "october" && !demo ? window.TimingModel.october(response) : response;
+      const nextData = !demo ? window.TimingModel[config.transform](response) : response;
+      if (nextData.weeks) {
+        weeks = nextData.weeks;
+        const initial = weeks.find(w => w.status === "ПРОВОДИМ СЕЙЧАС") || [...weeks].reverse().find(w => w.rows.length) || weeks[0];
+        showWeek(selectedWeek || initial.number, false);
+      } else {
       previousRows = new Map(data.rows.map(function (row, index) { return [rowKey(row, index), row]; }));
       data = nextData;
+      }
       lastSuccess = Date.now();
       setState(demo ? "demo" : "live", demo ? "Демонстрация" : "Данные доступны");
       elements["error-banner"].hidden = true;
       if (nextData.car && nextData.track) {
         elements["event-details"].textContent = nextData.car + " / " + nextData.track;
         elements["event-details"].hidden = false;
-        elements["footer-mode"].textContent = "Октябрь · " + nextData.track;
+        elements["footer-mode"].textContent = "Ноябрь · " + nextData.track;
       }
       renderTable();
     } catch (error) {

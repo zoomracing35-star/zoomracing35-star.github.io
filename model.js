@@ -94,6 +94,10 @@
         order: index
       });
     }
+    return rankParticipants(participants, car, track);
+  }
+
+  function rankParticipants(participants, car, track) {
     participants.sort((left, right) => {
       if (left.milliseconds === null && right.milliseconds === null) return left.order - right.order;
       if (left.milliseconds === null) return 1;
@@ -134,5 +138,46 @@
     };
   }
 
-  global.TimingModel = Object.freeze({ october, parseTime });
+
+  function november(data) {
+    const col = id => data.columns.findIndex(c => c.id === id);
+    const a = col("A");
+    const value = (r, c) => text(data.rows[r]?.[c]).trim();
+    const start = data.rows.findIndex((r, i) => /^НОЯБРЬ(?:\s|[-–—]|$)/iu.test(value(i, a)));
+    if (start < 0) throw new Error("В диапазоне таблицы не найден раздел «НОЯБРЬ».");
+    let end = data.rows.length;
+    for (let r = start + 1; r < end; r++) {
+      if (MONTH_BANNER.test(value(r, a))) { end = r; break; }
+    }
+    const weeks = [];
+    for (const [number, ids] of [[1,["A","B","C"]],[2,["D","E","F"]],[3,["G","H","I"]],[4,["J","K","L"]]]) {
+      const [n,t,p] = ids.map(col);
+      if ([n,t,p].some(i => i < 0)) throw new Error("Не найдены колонки недели " + number);
+      let weekRow = -1, header = -1;
+      for (let r = start + 1; r < end; r++) {
+        if (normalized(value(r,n)) === "НЕДЕЛЯ " + number) weekRow = r;
+        if (weekRow >= 0 && normalized(value(r,n)) === "ФИО") { header = r; break; }
+      }
+      if (header < 0) throw new Error("Не найден заголовок недели " + number);
+      for (const [index,label,types] of [[t,"ВРЕМЯ",["number","timeofday","datetime","date"]],[p,"БАЛЛЫ",["number"]]]) {
+        const h = normalized(value(header,index));
+        if (h !== label && !(h === "" && types.includes(data.columns[index].type))) throw new Error("Не распознаны заголовки недели " + number);
+      }
+      const metadata = [];
+      for(let r = weekRow + 1; r < header; r++) if(value(r,n)) metadata.push(value(r,n));
+      const participants = [];
+      let status = "";
+      for(let r = header + 1; r < end; r++) {
+        const name = value(r,n);
+        if (/^(ПРОВОДИМ\s+СЕЙЧАС|ЗАВЕРШЕНО|СКОРО)$/iu.test(name)) { status = normalized(name); break; }
+        if (!name || MARKER.test(name)) continue;
+        const time = value(r,t);
+        participants.push({name,time:time || "—",milliseconds:parseTime(time),points:value(r,p),order:r});
+      }
+      weeks.push(Object.assign(rankParticipants(participants, metadata[0] || "", metadata[1] || ""), {number,status}));
+    }
+    return {weeks};
+  }
+
+  global.TimingModel = Object.freeze({ october, november, parseTime });
 })(window);

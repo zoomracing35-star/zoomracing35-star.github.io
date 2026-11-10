@@ -114,3 +114,9 @@ td.participant{color:#fff;font-weight:500}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 @media(max-width:950px){.topbar{height:110px}.brand-logo{width:133px}h1{font-size:38px}h2{font-size:12px}}
 @media(max-width:660px){.topbar{height:105px}.brand-logo{width:117px}.brand{gap:0}.connection{font-size:9px;padding:9px}h1{font-size:32px;letter-spacing:-1.3px}.event-description{font-size:12px}.eyebrow{font-size:8px}.event-details{font-size:10px}h2{font-size:11px}tbody tr:first-child td:first-child{padding-left:13px}}
+
+.week-selector { display:flex; flex-wrap:wrap; gap:12px; margin:0 0 18px; }
+.week-selector button { flex:1 1 200px; padding:18px 14px; border:1px solid #333; background:#111; color:#ddd; font:inherit; cursor:pointer; border-radius:4px; }
+.week-selector button[aria-pressed="true"] { background:#2F00FF; color:#fff; border-color:#2F00FF; }
+.week-selector button:focus-visible { outline:2px solid white; outline-offset:4px; }
+.week-status { color:#aaa; margin:0 0 18px; }
